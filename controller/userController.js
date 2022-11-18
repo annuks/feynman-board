@@ -22,22 +22,49 @@ module.exports.addUser = async (req, res) => {
     }
   };
 
+  module.exports.loginUser = async(req,res)=>{
+    try{
+        let user = await User.findOne({ name:req.body.name });
+
+      if (!user) {
+        return res.json(402, {
+          message: "User not Availsble",
+          success : false
+        });
+      }
+      // if sign-in details are correct
+      else{
+      const topic =await Topic.find({userid:user._id});
+      return res.json(200, {
+        message: "User Topic List : ",
+        success: true,
+        data: {
+            topic,
+            user 
+          },
+      });
+ }}
+catch (err) {
+      console.log(" Error in JWT", err);
+      return res.json(500, {
+        message: "Internal Server error",
+      });
+    }
+  };
+
+
 
   module.exports.addTopic = async (req, res) => {
   try {
-     //console.log("Topic",req.params.id)
-    const user = await User.findById(req.params.id);
-   // console.log("User", user);
+    const user = await User.findById(req.body.id);
     if (user) {
     
       const topic = await Topic.create({
         userid: user._id,
         title:req.body.title,
-        desc:req.body.desc,
-        level:req.body.level
-        
+        desc:req.body.desc,        
       });
-    
+      
       topic.save();
       return res.json(200, {
         message: "Topic with Description Created",
@@ -53,7 +80,7 @@ module.exports.addUser = async (req, res) => {
     console.log("********", err);
     return res.json(500, {
       success: false,
-      message: " User id not found for Topic Creation",
+      message: "Internal Server Error",
     });
   }
 };
@@ -64,7 +91,7 @@ module.exports.getTopic = async (req, res) => {
    if (user) {
     const topic =await Topic.find();
      return res.json(200, {
-        message: "Topic List Generated",
+        message: "User Topic List : ",
         success: true,
         data: {
             topic, 
@@ -80,36 +107,3 @@ module.exports.getTopic = async (req, res) => {
     });
   }
 };
-
-// module.exports.getTopic = async(req,res)=>{
-//   try{
-//   if(!req.query.user_id){
-//       return res.json(400, {
-//           message: "Enter User Id",
-//           success: false,
-//       });
-//   }
-//   const topic= await Topic.find({userid:req.query.user_id});
-//   if(order){
-//       return res.json(200, {
-//         message: "Order list Generated",
-//         success: true,
-//         data: {
-//           order
-//         },
-//       });
-//     }else{
-//         return res.json(400, {
-//             message: "Order Not Found",
-//             success: false,
-//           });
-//     }
-
-//   } catch (err) {
-//     console.log("********", err);
-//     return res.json(500, {
-//         success: false,
-//         message: " *Internal Server Error- User id Not Found",
-//     });
-//   }
-// };

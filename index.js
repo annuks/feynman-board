@@ -6,8 +6,10 @@ const db =require('./config/mongoose');
 const bodyparser = require('body-parser');
 app.use(express.urlencoded());
 app.use(express.json());
+var cors = require('cors')
 
 
+app.use(cors())
 
 app.get('/', (req,res)=>{
     res.send("Home Landing");
